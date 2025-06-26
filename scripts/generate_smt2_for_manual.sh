@@ -1,6 +1,8 @@
 #!/bin/bash
+##
+# Generate smt2 files for counterxamples in proven manually.
 #
-# File:  get_interesting.sh
+# File:  generate_smt2_for_manual.sh
 # Author:  mikolas
 # Created on:  Thu Apr 24 10:00:53 CEST 2025
 # Copyright (C) 2025, Mikolas Janota
