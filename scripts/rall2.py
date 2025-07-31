@@ -15,11 +15,11 @@ def print_file(x, y):
     generate_smt2.m = z3.Function(
         "m", generate_smt2.S, generate_smt2.S, generate_smt2.S
     )
-    return generate_smt2.print_file(x, y)
+    return generate_smt2.print_smt2_file(x, y)
 
 
 def process_combination(x, y, external_command):
-    """Process a single x,y combination through external process"""
+    """Process a single x,y combination through external process."""
     try:
         # Generate the input string
         input_string = print_file(x, y)
@@ -53,7 +53,7 @@ def process_combination(x, y, external_command):
 
 
 def save_dictionary(results_dict, filename="results.pkl"):
-    """Save results dictionary to disk"""
+    """Save results dictionary to disk."""
     try:
         with open(filename, "wb") as f:
             pickle.dump(results_dict, f)
@@ -63,7 +63,7 @@ def save_dictionary(results_dict, filename="results.pkl"):
 
 
 def load_dictionary(filename="results.pkl"):
-    """Load existing results dictionary from disk"""
+    """Load existing results dictionary from disk."""
     if os.path.exists(filename):
         try:
             with open(filename, "rb") as f:
@@ -74,7 +74,8 @@ def load_dictionary(filename="results.pkl"):
 
 
 def generate_combinations():
-    """Generate all valid (x,y) combinations where x,y in 1..4694 and x != y"""
+    """Generate all valid (x,y) combinations where x,y in 1..4694 and x !=
+    y."""
     all = range(1, 4694)
     return [(x, y) for x in all for y in all if x != y]
 
