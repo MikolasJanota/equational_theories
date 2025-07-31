@@ -27,9 +27,9 @@ import generate_tptp
 class Res(Enum):
     """Possible result for single implication."""
 
-    IMPL_FALSE = 1
-    IMPL_TRUE = 0
-    IMPL_UNKNOWN = 0
+    IMPL_FALSE = 0
+    IMPL_TRUE = 1
+    IMPL_UNKNOWN = 2
 
 
 Results = namedtuple("Results", ["methods", "values"])
@@ -235,7 +235,9 @@ def main():
 
     # Filter out already processed combinations
     remaining_combinations = [
-        (x, y) for x, y in all_combinations if (x, y) not in results_dict
+        k
+        for k in all_combinations
+        if k not in results_dict or results_dict[k].value == Res.IMPL_UNKNOWN
     ]
 
     print(f"Total combinations: {total_combinations}")
