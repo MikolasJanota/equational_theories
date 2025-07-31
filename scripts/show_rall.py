@@ -20,6 +20,9 @@ def show_files():
 def show(pkl_file):
     """Show stats about res file."""
     results = load_results(pkl_file)
+    methods = results.methods
+    for met in methods:
+        print(met, methods[met])
     dat = results.values
     true_eqs = 0
     false_eqs = 0
