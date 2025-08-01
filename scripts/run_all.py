@@ -152,7 +152,7 @@ def save_results(results: Results, filename):
         print(f"Error saving results: {e}")
 
 
-def load_results(filename):
+def load_results(filename) -> Results:
     """Load existing results dictionary from disk."""
     if os.path.exists(filename):
         try:

@@ -18,6 +18,14 @@ def msg(*args, **kwargs):
 def cl(file_name):
     """Run stupid closure method."""
     res = load_results(file_name)
+    method_id = "clo"
+    cfg = SolverCfg(
+        external_command="new_by_closure.py",
+        use_smt2=None,
+        timeout=None,
+        method_id=method_id,
+    )
+    res.methods[method_id] = cfg
     dat = res.values
     msg("loaded")
     impl = set()
@@ -41,14 +49,16 @@ def cl(file_name):
 
     for k in new_non_impl:
         assert (
-            dat[k] != Res.IMPL_TRUE
-        ), f"{k} had value {dat[k]} but now it's marked as non-impl"
-        dat[k] = Res.IMPL_FALSE
+            k not in dat or dat[k].value != Res.IMPL_TRUE
+        ), f"{k} had value {dat[k].value} but now it's marked as non-impl"
+        r = ResultInfo(value=Res.IMPL_FALSE, time=0, method_id=method_id)
+        dat[k] = r
     for k in new_impl:
         assert (
-            dat[k] != Res.IMPL_FALSE
-        ), f"{k} had value {dat[k]} but now it's marked as impl"
-        dat[k] = Res.IMPL_TRUE
+            k not in dat or dat[k].value != Res.IMPL_FALSE
+        ), f"{k} had value {dat[k].value} but now it's marked as impl"
+        r = ResultInfo(value=Res.IMPL_TRUE, time=0, method_id=method_id)
+        dat[k] = r
     save_results(Results(res.methods, dat), f"closure_{file_name}")
 
 
