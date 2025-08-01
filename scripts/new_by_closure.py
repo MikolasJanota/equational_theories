@@ -6,12 +6,16 @@
 import argparse
 
 import closure
-from rall2 import load_dictionary
+from rall2 import load_dictionary, save_dictionary
+
+
+def msg(*args, **kwargs):
+    print("#", *args, **kwargs, flush=True)
 
 
 def cl(file_name):
     dat = load_dictionary(file_name)
-    print("# loaded")
+    msg("loaded")
     impl = set()
     non_impl = set()
     for k in dat:
@@ -22,14 +26,29 @@ def cl(file_name):
             non_impl.add(k)
         if val is False:
             impl.add(k)
-    print("total", len(dat))
-    print("impl", len(impl))
-    print("non-impl", len(non_impl))
-    print("unknown", len(dat) - len(non_impl) - len(non_impl))
-    new_impl, new_non_impl = closure.close_implications(impl, non_impl)
-    print("impl", len(new_impl))
-    print("non-impl", len(new_non_impl))
-    print("unknown", len(dat) - len(new_non_impl) - len(new_non_impl))
+    msg("total", len(dat))
+    msg("impl", len(impl))
+    msg("non-impl", len(non_impl))
+    msg("unknown", len(dat) - len(non_impl) - len(impl))
+    new_impl, new_non_impl = closure.close_implications(True, impl, non_impl)
+    msg("impl", len(new_impl))
+    msg("non-impl", len(new_non_impl))
+    msg("unknown", len(dat) - len(new_non_impl) - len(new_impl))
+
+    def filled(val):
+        return val is False or val is True
+
+    for k in new_non_impl:
+        assert (
+            not filled(dat[k]) or dat[k] is True
+        ), f"{k} had value {dat[k]} but now it's marked as non-impl"
+        dat[k] = True
+    for k in new_impl:
+        assert (
+            not filled(dat[k]) or dat[k] is False
+        ), f"{k} had value {dat[k]} but now it's marked as impl"
+        dat[k] = False
+    save_dictionary(dat, f"closure_{file_name}")
 
 
 def run():

@@ -11,8 +11,14 @@ import sys
 
 
 def diff(s1, s2):
-    print("1 but not 2", s1 - s2)
-    print("2 but not 1", s2 - s1)
+    d1 = s1 - s2
+    d2 = s2 - s1
+    print(f"1 but not 2 #{len(d1)}")
+    for a, b in d1:
+        print(a, b)
+    print(f"2 but not 1 #{len(d2)}")
+    for a, b in d2:
+        print(a, b)
 
 
 def read(f):

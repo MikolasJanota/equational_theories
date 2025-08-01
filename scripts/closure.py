@@ -6,8 +6,12 @@
 from collections import defaultdict, deque
 
 
-def close_implications(known_implications, known_non_implications):
-    print("closure start")
+def msg(*args, **kwargs):
+    print("#", *args, **kwargs, flush=True)
+
+
+def close_implications(neg_only, known_implications, known_non_implications):
+    msg("closure start")
     implies = defaultdict(set)
     not_implies = defaultdict(set)
 
@@ -23,7 +27,11 @@ def close_implications(known_implications, known_non_implications):
             implies[a].add(b)
             worklist.append((a, b))
 
+    if neg_only:
+        worklist = None
     while worklist:
+        if len(worklist) % 1000 == 0:
+            msg("todo pos:", len(worklist))
         a, b = worklist.popleft()
 
         # Rule: If A ⇒ B and B ⇒ C, then A ⇒ C
@@ -31,7 +39,7 @@ def close_implications(known_implications, known_non_implications):
             if c != a and c not in implies[a]:
                 implies[a].add(c)
                 worklist.append((a, c))
-                print(f"New positive {a} {c} from {a}=>{b},{b}=>{c}")
+                msg(f"New positive {a} {c} from {a}=>{b},{b}=>{c}")
                 assert c not in not_implies[a]
 
         # Rule: If D ⇒ A and A ⇒ B, then D ⇒ B
@@ -39,20 +47,30 @@ def close_implications(known_implications, known_non_implications):
             if d != b and a in implies[d] and b not in implies[d]:
                 implies[d].add(b)
                 worklist.append((d, b))
-                print(f"New positive {d} {b} from {d}=>{a},{a}=>{b}")
+                msg(f"New positive {d} {b} from {d}=>{a},{a}=>{b}")
                 assert b not in not_implies[d]
-    print("Positive closed")
+    msg("Positive closed")
 
     changed = True
     while changed:
-        print("New non round")
+        msg("New non round")
         new_non = set()
-        for a in implies:
+        for i, a in enumerate(implies):
+            if i % 100 == 0:
+                msg("non prop1:", i)
             for b in implies[a]:
                 for c in not_implies[a]:
                     if c not in not_implies[b]:
                         new_non.add((b, c))
-                        print(f"New negative {b} {c}")
+                        msg(f"New negative {b} {c}")
+        for i, a in enumerate(not_implies):
+            if i % 100 == 0:
+                msg("non prop2:", i)
+            for c in not_implies[a]:
+                for b in implies:
+                    if c in implies[b] and b not in not_implies[a]:
+                        new_non.add((a, b))
+                        msg(f"New negative {a} {b}")
         changed = len(new_non) != 0
         for x, y in new_non:
             not_implies[x].add(y)
@@ -74,8 +92,8 @@ def close_implications(known_implications, known_non_implications):
 
 def run_test():
     """Example usage."""
-    known_implications = [(0, 1), (1, 3), (4, 5)]
-    known_non_implications = {(4, 6)}
+    known_implications = [(0, 1), (1, 3), (4, 5), (8, 9)]
+    known_non_implications = {(4, 6), (7, 9)}
 
     implied, not_implied = close_implications(
         known_implications, known_non_implications
