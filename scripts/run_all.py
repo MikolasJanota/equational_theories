@@ -20,6 +20,7 @@ from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from enum import Enum
 
+import generate_eqs_list
 import generate_smt2
 import generate_tptp
 
@@ -93,7 +94,7 @@ def process_tptp_out(out):
         return Res.IMPL_FALSE
     if status == "Unsatisfiable":
         return Res.IMPL_TRUE
-    print(f"Warning: unknown result from solver {szs_line}", file=sys.stderr)
+    print(f"Warning: unknown status from solver {status}", file=sys.stderr)
     return Res.IMPL_UNKNOWN
 
 
@@ -163,9 +164,10 @@ def load_results(filename):
 
 
 def generate_combinations():
-    """Generate (x,y) combinations where x,y in 1..4694 and x != y."""
-    # all_eqs = range(1, 4694)
-    all_eqs = range(1, 5)
+    """Generate (x,y) combinations where x,y in 1..len(eqs) and x != y."""
+    neqs = len(generate_eqs_list.eqs)
+    all_eqs = range(1, neqs + 1)
+    # all_eqs = range(1, 5)
     return [(x, y) for x in all_eqs for y in all_eqs if x != y]
 
 
