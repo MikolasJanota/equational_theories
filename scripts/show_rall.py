@@ -21,7 +21,9 @@ def show(pkl_file):
     """Show stats about res file."""
     results = load_results(pkl_file)
     methods = results.methods
-    solved_by_method = {m: 0 for m in methods}
+    solved_by_method = {
+        m: {v: 0 for v in {Res.IMPL_FALSE, Res.IMPL_TRUE}} for m in methods
+    }
     for met in methods:
         print(met, methods[met])
     dat = results.values
@@ -33,18 +35,19 @@ def show(pkl_file):
         val: Res = ri.value
         if val == Res.IMPL_UNKNOWN:
             continue
-        solved_by_method[ri.method_id] += 1
+        solved_by_method[ri.method_id][val] += 1
         if val == Res.IMPL_FALSE:
-            true_eqs += 1
-        if val == Res.IMPL_TRUE:
             false_eqs += 1
+        if val == Res.IMPL_TRUE:
+            true_eqs += 1
     print("===", pkl_file)
     print(f"total: {len(dat):,}")
     print(f"trues: {true_eqs:,}")
     print(f"falses: {false_eqs:,}")
     print(f"unknown: {(len(dat) - true_eqs - false_eqs):,}")
     for m in methods:
-        print(f"{m}: {solved_by_method[m]}")
+        fs, ts = solved_by_method[m][Res.IMPL_FALSE], solved_by_method[m][Res.IMPL_TRUE]
+        print(f"{m}: {fs+ts:,} = F:{fs:,} T:{ts:,}")
 
 
 if __name__ == "__main__":
