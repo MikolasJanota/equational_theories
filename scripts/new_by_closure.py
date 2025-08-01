@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Stupid closure method."""
 # File:  new_by_closure.py
 # Author:  mikolas
 # Created on:  Thu Jul 3 12:40:15 PM UTC 2025
@@ -6,25 +7,28 @@
 import argparse
 
 import closure
-from rall2 import load_dictionary, save_dictionary
+from run_all import Res, ResultInfo, Results, SolverCfg, load_results, save_results
 
 
 def msg(*args, **kwargs):
+    """Report."""
     print("#", *args, **kwargs, flush=True)
 
 
 def cl(file_name):
-    dat = load_dictionary(file_name)
+    """Run stupid closure method."""
+    res = load_results(file_name)
+    dat = res.values
     msg("loaded")
     impl = set()
     non_impl = set()
     for k in dat:
-        val = dat[k]
-        if val is None:
+        val: Res = dat[k].value
+        if val == Res.IMPL_UNKNOWN:
             continue
-        if val is True:
+        if val is Res.IMPL_FALSE:
             non_impl.add(k)
-        if val is False:
+        if val is Res.IMPL_TRUE:
             impl.add(k)
     msg("total", len(dat))
     msg("impl", len(impl))
@@ -35,23 +39,21 @@ def cl(file_name):
     msg("non-impl", len(new_non_impl))
     msg("unknown", len(dat) - len(new_non_impl) - len(new_impl))
 
-    def filled(val):
-        return val is False or val is True
-
     for k in new_non_impl:
         assert (
-            not filled(dat[k]) or dat[k] is True
+            dat[k] != Res.IMPL_TRUE
         ), f"{k} had value {dat[k]} but now it's marked as non-impl"
-        dat[k] = True
+        dat[k] = Res.IMPL_FALSE
     for k in new_impl:
         assert (
-            not filled(dat[k]) or dat[k] is False
+            dat[k] != Res.IMPL_FALSE
         ), f"{k} had value {dat[k]} but now it's marked as impl"
-        dat[k] = False
-    save_dictionary(dat, f"closure_{file_name}")
+        dat[k] = Res.IMPL_TRUE
+    save_results(Results(res.methods, dat), f"closure_{file_name}")
 
 
 def run():
+    """Run the whole program."""
     parser = argparse.ArgumentParser()
     parser.add_argument("pkl_file", nargs="?", default="results.pkl")
     args = parser.parse_args()

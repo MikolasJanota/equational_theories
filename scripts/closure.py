@@ -7,6 +7,7 @@ from collections import defaultdict, deque
 
 
 def msg(*args, **kwargs):
+    """Resport."""
     print("#", *args, **kwargs, flush=True)
 
 
@@ -96,7 +97,7 @@ def run_test():
     known_non_implications = {(4, 6), (7, 9)}
 
     implied, not_implied = close_implications(
-        known_implications, known_non_implications
+        False, known_implications, known_non_implications
     )
 
     print("Implied Pairs:")
