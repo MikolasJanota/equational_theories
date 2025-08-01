@@ -84,13 +84,14 @@ def process_tptp_out(out):
     szs_line = None
     for line in out.split("\n"):
         if line.startswith("% SZS status"):
-            szs_line = line
+            szs_line = line.split()
+            status = None if len(szs_line) < 4 else szs_line[3]
             break
-    if szs_line is None:
+    if status is None or status == "Timeout":
         return Res.IMPL_UNKNOWN
-    if "Satisfiable" in szs_line:
+    if status == "Satisfiable":
         return Res.IMPL_FALSE
-    if "Unsatisfiable" in szs_line:
+    if status == "Unsatisfiable":
         return Res.IMPL_TRUE
     print(f"Warning: unknown result from solver {szs_line}", file=sys.stderr)
     return Res.IMPL_UNKNOWN
@@ -145,7 +146,7 @@ def save_results(results: Results, filename):
     try:
         with open(filename, "wb") as f:
             pickle.dump(results, f)
-        print(f"Saved {len(results)} results to {filename}")
+        print(f"Saved {len(results.values)} results to {filename}")
     except Exception as e:
         print(f"Error saving results: {e}")
 
@@ -316,5 +317,21 @@ def main():
     print(f"Total results: {len(results_dict)}")
 
 
-if __name__ == "__main__":
+def time_main():
+    """Time the whole run."""
+    start_wall = time.perf_counter()
+    start_cpu = time.process_time()
     main()
+    end_wall = time.perf_counter()
+    end_cpu = time.process_time()
+    wall_time = end_wall - start_wall
+    cpu_time = end_cpu - start_cpu
+    print(f"Wall clock time: {wall_time:.2f} seconds")
+    print(f"CPU time: {cpu_time:.2f} seconds")
+    print(
+        f"CPU efficiency: {(cpu_time/wall_time)*100:.1f}%" if wall_time > 0 else "N/A"
+    )
+
+
+if __name__ == "__main__":
+    time_main()
