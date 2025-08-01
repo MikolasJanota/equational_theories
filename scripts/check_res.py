@@ -51,7 +51,8 @@ def check_file(impls, pkl_file):
     """Show stats about res file."""
     results = load_results(pkl_file)
     dat = results.values
-    print(f"checking {len(dat)} results")
+    print(f"checking at most {len(dat)} results")
+    checked = 0
     for k in dat:
         ri: ResultInfo = dat[k]
         val: Res = ri.value
@@ -64,6 +65,8 @@ def check_file(impls, pkl_file):
         elif val == Res.IMPL_TRUE and k not in impls:
             print(f"not expected {k} but got true")
             sys.exit(1)
+        checked += 1
+    print(f"checked {checked} results")
 
 
 if __name__ == "__main__":
