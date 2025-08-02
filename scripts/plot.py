@@ -114,6 +114,7 @@ def plot_histogram(data, bins=10, figsize=(12, 8), save_path=None):
     ax.set_xlabel("Time", fontsize=12)
     ax.set_ylabel("Number of Data Points", fontsize=12)
     ax.set_title("Histogram of Time Data by Holds and Method", fontsize=14)
+    ax.set_yscale("log", base=10)
 
     # Improve legend positioning
     legend = ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
