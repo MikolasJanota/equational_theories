@@ -118,7 +118,7 @@ def process_combination(x, y, solver_cfg: SolverCfg):
             print_file_smt2(x, y) if solver_cfg.use_smt2 else print_file_tptp(x, y)
         )
 
-        start = time.process_time()
+        start = time.perf_counter()
         result = subprocess.run(
             solver_cfg.external_command,
             input=input_string,
@@ -127,9 +127,9 @@ def process_combination(x, y, solver_cfg: SolverCfg):
             timeout=solver_cfg.timeout,
             check=False,
         )
-        cpu_time = round(time.process_time() - start, 3)
+        prob_time = round(time.perf_counter() - start, 3)
         res = process_tptp_out(result.stdout)
-        return (x, y, ResultInfo(res, cpu_time, solver_cfg.method_id))
+        return (x, y, ResultInfo(res, prob_time, solver_cfg.method_id))
 
     except subprocess.TimeoutExpired:
         return (
@@ -167,7 +167,7 @@ def generate_combinations():
     """Generate (x,y) combinations where x,y in 1..len(eqs) and x != y."""
     neqs = len(generate_eqs_list.eqs)
     all_eqs = range(1, neqs + 1)
-    # all_eqs = range(1, 5)
+    # all_eqs = range(1, 30)
     return [(x, y) for x in all_eqs for y in all_eqs if x != y]
 
 
