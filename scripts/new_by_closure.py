@@ -44,21 +44,24 @@ def cl(file_name):
     msg("impl", len(new_impl), f"+{len(new_impl)-len(impl)}")
     msg("non-impl", len(new_non_impl), f"+{len(new_non_impl)-len(non_impl)}")
 
-    def not_value(k, v):
+    def check_not_value(k, v):
         test = k not in dat or dat[k].value != v
         assert test, f"{k} had value {dat[k].value} but now it's marked as {v}"
+
+    def is_unknown(k):
+        return k not in dat or dat[k].value == Res.IMPL_UNKNOWN
 
     added_non = 0
     added_pos = 0
     for k in new_non_impl:
-        not_value(k, Res.IMPL_TRUE)
-        if k not in dat:
+        check_not_value(k, Res.IMPL_TRUE)
+        if is_unknown(k):
             r = ResultInfo(value=Res.IMPL_FALSE, time=0, method_id=method_id)
             dat[k] = r
             added_non += 1
     for k in new_impl:
-        not_value(k, Res.IMPL_FALSE)
-        if k not in dat:
+        check_not_value(k, Res.IMPL_FALSE)
+        if is_unknown(k):
             r = ResultInfo(value=Res.IMPL_TRUE, time=0, method_id=method_id)
             dat[k] = r
             added_pos += 1

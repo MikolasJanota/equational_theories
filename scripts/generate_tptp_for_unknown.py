@@ -52,6 +52,7 @@ def export(pkl_file, out_dir, res):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     for k in combinations:
+        assert k not in dat or dat[k].value != Res.IMPL_TRUE or k in impls
         if k in dat and dat[k].value != Res.IMPL_UNKNOWN:
             continue
         lhs, rhs = k
@@ -61,7 +62,7 @@ def export(pkl_file, out_dir, res):
             os.path.join(out_dir, out_file_name), "w", encoding="ascii"
         ) as out_file:
             if impls is not None:
-                out_file.write(f"% proven true: {(lhs, rhs) in impls}\n")
+                out_file.write(f"% proven true: {k in impls}\n")
             if k in infins:
                 out_file.write("% requires infinite model (as far as we know)\n")
             out_file.write(print_tptp_file(lhs, rhs))
