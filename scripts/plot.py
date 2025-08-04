@@ -10,11 +10,14 @@ from run_all import Res, ResultInfo, Results, SolverCfg, load_results
 # Sample data with more realistic values - replace this with your actual data
 sample_data = [
     ("1", True, 1, "method1"),
+    ("1", True, 1.5, "method1"),
     ("2", False, 1, "method1"),
     ("3", True, 1, "method2"),
     ("4", True, 10, "method1"),
     ("5", False, 10, "method1"),
     ("6", True, 10, "method2"),
+    ("8", False, 1.3, "method2"),
+    ("7", False, 5, "method2"),
 ]
 
 CB_color_cycle = [
@@ -37,7 +40,7 @@ def plot_stacked_histogram(data, bins=10, figsize=(12, 8), save_path=None):
     df = pd.DataFrame(data, columns=["key", "holds", "time", "method"])
 
     # Data validation and cleaning (same as overlapping histogram)
-    print(f"STACKED HISTOGRAM - Original data points: {len(df)}")
+    print(f"HISTOGRAM - Original data points: {len(df)}")
     print(f"Time range: {df['time'].min():.3f} to {df['time'].max():.3f}")
 
     # Check for negative times
@@ -55,15 +58,15 @@ def plot_stacked_histogram(data, bins=10, figsize=(12, 8), save_path=None):
 
     # Prepare data for stacked histogram
     categories = df["category"].unique()
-    print(f"STACKED - Categories found: {categories}")
+    print(f"Categories found: {categories}")
 
     # Create time data arrays and check for empty categories
     time_data = []
-    valid_categories = []
+    valid_categories: list[str] = []
 
     for cat in categories:
         cat_data = df[df["category"] == cat]["time"].values
-        print(f"STACKED - Category '{cat}': {len(cat_data)} data points")
+        print(f"Category '{cat}': {len(cat_data)} data points")
         if len(cat_data) > 0:
             time_data.append(cat_data)
             valid_categories.append(cat)
@@ -88,29 +91,34 @@ def plot_stacked_histogram(data, bins=10, figsize=(12, 8), save_path=None):
     else:
         bin_edges = bins
 
-    print(
-        f"STACKED - Using {bins} bins for time range {time_min:.3f} to {time_max:.3f}"
-    )
+    print(f"Using {bins} bins for time range {time_min:.3f} to {time_max:.3f}")
 
-    # Create stacked histogram with better colors
-    if len(valid_categories) <= 10:
+    # Create histogram with better colors
+    if len(valid_categories) <= len(CB_color_cycle):
+        colors = CB_color_cycle[0 : len(valid_categories)]
+    elif len(valid_categories) <= 10:
         colors = plt.cm.tab10(np.linspace(0, 1, len(valid_categories)))
     else:
         colors = plt.cm.Set3(np.linspace(0, 1, len(valid_categories)))
 
+    # print(time_data)
     n, _bins_used, _patches = ax.hist(
         time_data,
         bins=bin_edges,
-        label=valid_categories,
+        label=[cat.replace("_", " ") for cat in valid_categories],
         alpha=0.8,
         edgecolor="black",
         linewidth=0.8,
-        stacked=True,
+        stacked=False,
         color=colors,
     )
 
-    # Debug output for stacked histogram
-    print("STACKED - Histogram results:")
+    # Debug output for histogram
+    print("Histogram results:")
+
+    for i, ni in enumerate(n):
+        print("cat bins", categories[i], ni)
+
     for cat, counts in zip(valid_categories, n):
         total_count = np.sum(counts)
         print(
@@ -121,7 +129,8 @@ def plot_stacked_histogram(data, bins=10, figsize=(12, 8), save_path=None):
 
     ax.set_xlabel("Time", fontsize=12)
     ax.set_ylabel("Number of Data Points", fontsize=12)
-    ax.set_title("Stacked Histogram of Time Data by Holds and Method", fontsize=14)
+    ax.set_title("Time Data by True/False and Solving Method", fontsize=14)
+    ax.set_yscale("log", base=10)
 
     # Improve legend
     legend = ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
@@ -138,7 +147,7 @@ def plot_stacked_histogram(data, bins=10, figsize=(12, 8), save_path=None):
     # Save as PDF if path provided
     if save_path:
         plt.savefig(save_path, format="pdf", bbox_inches="tight", dpi=300)
-        print(f"Stacked plot saved as PDF: {save_path}")
+        print(f"Plot saved as PDF: {save_path}")
     else:
         plt.show()
 
@@ -199,7 +208,7 @@ def mk_plot_dat(pkl_file):
     return plot_data
 
 
-DEBUG = True
+DEBUG = False
 
 
 def read_and_plot(pkl_file):
@@ -211,15 +220,8 @@ def read_and_plot(pkl_file):
 
     print(f"inspecting data {len(plot_data)}")
     inspect_data(plot_data)
-    # print("Plotting overlapping histogram...")
-    # plot_histogram(plot_data, bins=3, save_path="overlapping_histogram.pdf")
-
-    print("\nPlotting stacked histogram...")
-    print(plot_data)
-    plot_stacked_histogram(plot_data, bins=20, save_path="stacked_histogram.pdf")
-
-    # print("\nPlotting separate subplots...")
-    # plot_separate_subplots(sample_data, save_path="separate_subplots.pdf")
+    print("\nPlotting histogram...")
+    plot_stacked_histogram(plot_data, bins=20, save_path="time_histogram.pdf")
 
 
 def main():
