@@ -7,6 +7,7 @@ import argparse
 import os
 from pathlib import Path
 
+import check_res
 from generate_tptp import print_tptp_file
 from run_all import (
     Res,
@@ -30,12 +31,19 @@ def main():
     parser.add_argument(
         "out_dir", help="name of the directory where to output files", type=str
     )
+    parser.add_argument(
+        "--res",
+        help="add info about expected result obtained from general_implications_closure.json",
+        action="store_true",
+        default=False,
+    )
     args = parser.parse_args()
-    export(args.pkl_file, args.out_dir)
+    export(args.pkl_file, args.out_dir, args.res)
 
 
-def export(pkl_file, out_dir):
+def export(pkl_file, out_dir, res):
     """Export all they unknowns."""
+    impls = check_res.read_json() if res else None
     results = load_results(pkl_file)
     dat = results.values
     combinations = generate_combinations()
@@ -50,6 +58,7 @@ def export(pkl_file, out_dir):
         with open(
             os.path.join(out_dir, out_file_name), "w", encoding="ascii"
         ) as out_file:
+            out_file.write(f"% proven true: {(lhs, rhs) in impls}\n")
             out_file.write(print_tptp_file(lhs, rhs))
 
 
