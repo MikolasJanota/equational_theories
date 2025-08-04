@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-from itertools import cycle
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,6 +24,18 @@ sample_data = [
     ("E", True, 4.1, "method3"),
     ("F", False, 2.8, "method1"),
     ("G", True, 1.6, "method2"),
+]
+
+CB_color_cycle = [
+    "#377eb8",
+    "#ff7f00",
+    "#4daf4a",
+    "#f781bf",
+    "#a65628",
+    "#984ea3",
+    "#999999",
+    "#e41a1c",
+    "#dede00",
 ]
 
 
@@ -302,8 +313,8 @@ def read_and_plot(pkl_file):
     inspect_data(plot_data)
     plot_histogram(plot_data, bins=3, save_path="overlapping_histogram.pdf")
 
-    # print("\nPlotting stacked histogram...")
-    # plot_stacked_histogram(sample_data, save_path="stacked_histogram.pdf")
+    print("\nPlotting stacked histogram...")
+    plot_stacked_histogram(plot_data, save_path="stacked_histogram.pdf")
 
     # print("\nPlotting separate subplots...")
     # plot_separate_subplots(sample_data, save_path="separate_subplots.pdf")
