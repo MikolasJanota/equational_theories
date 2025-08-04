@@ -82,11 +82,11 @@ def get_program_version(program_name):
 
 def process_tptp_out(out):
     """Take TPTP output and returns a Res."""
-    szs_line = None
+    status = None
     for line in out.split("\n"):
         if line.startswith("% SZS status"):
             szs_line = line.split()
-            status = None if len(szs_line) < 4 else szs_line[3]
+            status = "Missing" if len(szs_line) < 4 else szs_line[3]
             break
     if status is None or status == "Timeout":
         return Res.IMPL_UNKNOWN
