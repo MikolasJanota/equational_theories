@@ -27,7 +27,6 @@ def cl(file_name):
     )
     res.methods[method_id] = cfg
     dat = res.values
-    msg("loaded")
     impl = set()
     non_impl = set()
     for k in dat:
@@ -47,18 +46,26 @@ def cl(file_name):
     msg("non-impl", len(new_non_impl))
     msg("unknown", len(dat) - len(new_non_impl) - len(new_impl))
 
+    def not_value(k, v):
+        test = k not in dat or dat[k].value != v
+        assert test, f"{k} had value {dat[k].value} but now it's marked as {v}"
+
+    added_non = 0
+    added_pos = 0
     for k in new_non_impl:
-        assert (
-            k not in dat or dat[k].value != Res.IMPL_TRUE
-        ), f"{k} had value {dat[k].value} but now it's marked as non-impl"
-        r = ResultInfo(value=Res.IMPL_FALSE, time=0, method_id=method_id)
-        dat[k] = r
+        not_value(k, Res.IMPL_TRUE)
+        if k not in dat:
+            r = ResultInfo(value=Res.IMPL_FALSE, time=0, method_id=method_id)
+            dat[k] = r
+            added_non += 1
     for k in new_impl:
-        assert (
-            k not in dat or dat[k].value != Res.IMPL_FALSE
-        ), f"{k} had value {dat[k].value} but now it's marked as impl"
-        r = ResultInfo(value=Res.IMPL_TRUE, time=0, method_id=method_id)
-        dat[k] = r
+        not_value(k, Res.IMPL_FALSE)
+        if k not in dat:
+            r = ResultInfo(value=Res.IMPL_TRUE, time=0, method_id=method_id)
+            dat[k] = r
+            added_pos += 1
+
+    msg(f"added pos {added_pos}, added neg {added_non}, tot {added_non+added_pos}")
     save_results(Results(res.methods, dat), f"closure_{file_name}")
 
 
