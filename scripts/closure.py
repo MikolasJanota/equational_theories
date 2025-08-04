@@ -20,6 +20,7 @@ class Implications:
 
     def add(self, a, b):
         """Add edge a->b."""
+        assert a != b
         self.implies[a].add(b)
         self.is_implied[b].add(a)
 
@@ -29,14 +30,22 @@ def close_implications(known_implications, known_non_implications, neg_only):
     implications = Implications(known_implications)
     not_implies = defaultdict(set)
 
+    universe = {a for pairs in known_implications for a in pairs} | {
+        a for pairs in known_non_implications for a in pairs
+    }
+    uni_sz = len(universe)
+
     # Initialize non implications
     for a, b in known_non_implications:
+        assert a != b
         not_implies[a].add(b)
 
     # Initialize que
     worklist = deque()
     for a, b in known_implications:
-        worklist.append((a, b))
+        # skipping points that already imply everything possible
+        if len(implications.implies[a]) < uni_sz - 1:
+            worklist.append((a, b))
 
     if neg_only:
         worklist = None
