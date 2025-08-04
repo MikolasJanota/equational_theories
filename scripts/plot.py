@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-from itertools import cycle
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -166,14 +165,15 @@ def plot_stacked_histogram(data, bins=10, figsize=(12, 8), save_path=None):
     ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
     ax.grid(True, alpha=0.3)
 
+    ax.set_yscale("log", base=10)
     plt.tight_layout()
 
     # Save as PDF if path provided
     if save_path:
         plt.savefig(save_path, format="pdf", bbox_inches="tight", dpi=300)
         print(f"Stacked plot saved as PDF: {save_path}")
-
-    plt.show()
+    else:
+        plt.show()
 
 
 def plot_separate_subplots(data, bins=10, figsize=(15, 10), save_path=None):
@@ -302,8 +302,8 @@ def read_and_plot(pkl_file):
     inspect_data(plot_data)
     plot_histogram(plot_data, bins=3, save_path="overlapping_histogram.pdf")
 
-    # print("\nPlotting stacked histogram...")
-    # plot_stacked_histogram(sample_data, save_path="stacked_histogram.pdf")
+    print("\nPlotting stacked histogram...")
+    plot_stacked_histogram(plot_data, bins=20, save_path="stacked_histogram.pdf")
 
     # print("\nPlotting separate subplots...")
     # plot_separate_subplots(sample_data, save_path="separate_subplots.pdf")
