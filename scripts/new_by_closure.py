@@ -40,11 +40,9 @@ def cl(file_name):
     msg("total", len(dat))
     msg("impl", len(impl))
     msg("non-impl", len(non_impl))
-    msg("unknown", len(dat) - len(non_impl) - len(impl))
-    new_impl, new_non_impl = closure.close_implications(True, impl, non_impl)
-    msg("impl", len(new_impl))
-    msg("non-impl", len(new_non_impl))
-    msg("unknown", len(dat) - len(new_non_impl) - len(new_impl))
+    new_impl, new_non_impl = closure.close_implications(impl, non_impl, neg_only=False)
+    msg("impl", len(new_impl), f"+{len(new_impl)-len(impl)}")
+    msg("non-impl", len(new_non_impl), f"+{len(new_non_impl)-len(non_impl)}")
 
     def not_value(k, v):
         test = k not in dat or dat[k].value != v

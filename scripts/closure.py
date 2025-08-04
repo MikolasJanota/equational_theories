@@ -24,7 +24,7 @@ class Implications:
         self.is_implied[b].add(a)
 
 
-def close_implications(neg_only, known_implications, known_non_implications):
+def close_implications(known_implications, known_non_implications, neg_only):
     msg("closure start")
     implications = Implications(known_implications)
     not_implies = defaultdict(set)
@@ -102,7 +102,7 @@ def run_test():
     known_non_implications = {(4, 6), (7, 9)}
 
     implies, not_implies = close_implications(
-        False, known_implications, known_non_implications
+        known_implications, known_non_implications, False
     )
 
     print("Implied Pairs:")
