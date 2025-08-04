@@ -46,19 +46,22 @@ def export(pkl_file, out_dir, res):
     impls = check_res.read_json() if res else None
     results = load_results(pkl_file)
     dat = results.values
+    msg(f"loaded {len(dat)} values")
     combinations = generate_combinations()
-    msg(f"generating for {len(combinations)} combinations")
+    msg(f"generating from {len(combinations)} combinations")
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     for k in combinations:
-        if k in dat and dat[k] != Res.IMPL_UNKNOWN:
+        if k in dat and dat[k].value != Res.IMPL_UNKNOWN:
             continue
         lhs, rhs = k
+        msg(f"generate {lhs} {rhs}")
         out_file_name = Path(f"{lhs}_{rhs}.p")
         with open(
             os.path.join(out_dir, out_file_name), "w", encoding="ascii"
         ) as out_file:
-            out_file.write(f"% proven true: {(lhs, rhs) in impls}\n")
+            if impls is not None:
+                out_file.write(f"% proven true: {(lhs, rhs) in impls}\n")
             out_file.write(print_tptp_file(lhs, rhs))
 
 
