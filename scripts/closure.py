@@ -25,6 +25,13 @@ class Implications:
         self.is_implied[b].add(a)
 
 
+def add_to_set(e, s: set) -> bool:
+    if e in s:
+        return False
+    s.add(e)
+    return True
+
+
 def close_implications(known_implications, known_non_implications, neg_only):
     msg("closure start")
     implications = Implications(known_implications)
@@ -43,8 +50,8 @@ def close_implications(known_implications, known_non_implications, neg_only):
     # Initialize que
     worklist = deque()
     for a, b in known_implications:
-        # skipping points that already imply everything possible
-        if len(implications.implies[a]) < uni_sz - 1:
+        # skipping if we know status of all impls starting from a
+        if len(implications.implies[a]) + len(not_implies[a]) < uni_sz - 1:
             worklist.append((a, b))
 
     if neg_only:
@@ -82,8 +89,7 @@ def close_implications(known_implications, known_non_implications, neg_only):
             # if a => b and not (a => c) then not (b => c)
             for b in implications.implies[a]:
                 for c in not_implies[a]:
-                    if c not in not_implies[b]:
-                        new_non.add((b, c))
+                    if c not in not_implies[b] and add_to_set((b, c), new_non):
                         msg(f"New negative {b} {c} from {a}=>{b}, not {a}=>{c}")
 
         for i, a in enumerate(not_implies):
@@ -92,8 +98,7 @@ def close_implications(known_implications, known_non_implications, neg_only):
             # if not (a => c) and b => c then not (a => b)
             for c in not_implies[a]:
                 for b in implications.is_implied[c]:
-                    if b not in not_implies[a]:
-                        new_non.add((a, b))
+                    if b not in not_implies[a] and add_to_set((a, b), new_non):
                         msg(f"New negative {a} {b} from {b}=>{c}, not {a}=>{c}")
         changed = len(new_non) != 0
         for x, y in new_non:
