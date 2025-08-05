@@ -7,7 +7,7 @@ import pandas as pd
 
 from run_all import Res, ResultInfo, Results, SolverCfg, load_results
 
-# Sample data with more realistic values - replace this with your actual data
+# Sample data with more realistic values
 sample_data = [
     ("1", True, 1, "method1"),
     ("1", True, 1.5, "method1"),
@@ -232,6 +232,5 @@ def main():
     read_and_plot(args.pkl_file)
 
 
-# Usage example:
 if __name__ == "__main__":
     main()
