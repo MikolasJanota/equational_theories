@@ -29,7 +29,7 @@ from z3 import (
 )
 
 import generate_eqs_list
-from generate_eqs_list import eqs, format_expr
+from generate_eqs_list import eqs
 
 
 class Converter:
@@ -77,10 +77,23 @@ def mk_exists(t: ExprRef):
     return Exists(list(get_vars(t)), t)
 
 
+def term2str(tup, top=False):
+    vars = "xyzwuvrst"
+    if isinstance(tup, int):
+        return vars[tup]
+    if isinstance(tup, tuple):
+        assert len(tup) == 2
+        x, y = tup
+        rv = f"{term2str(x)}{term2str(y)}"
+        return rv if top else f"({rv})"
+    raise ValueError("Expected an int or a tuple")
+    return None
+
+
 def format_eq(e):
     """Turn equation into a string, for printing only."""
     assert isinstance(e, tuple) and len(e) == 2
-    return f"{format_expr(e[0])} = {format_expr(e[1])}"
+    return f"{term2str(e[0], True)} = {term2str(e[1], True)}"
 
 
 def print_smt2_file(left, right, m, thesort, logic, skolemize):

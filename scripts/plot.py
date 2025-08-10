@@ -189,7 +189,7 @@ def inspect_data(data):
 
 
 def mk_plot_dat(pkl_file):
-    """Debugging data."""
+    """Create data from pkl."""
     results = load_results(pkl_file)
     dat = results.values
     plot_data = []
