@@ -23,7 +23,7 @@ def msg(*args, **kwargs):
 
 
 def dictify(t):
-    if isinstance(t, tuple):
+    if not isinstance(t, SolverCfg):
         t = t[0]
     assert isinstance(t, SolverCfg)
     return t._asdict()

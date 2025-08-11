@@ -106,7 +106,9 @@ def main():
 
     # Filter out already processed combinations
     remaining_combinations = [
-        (x, y) for x, y in all_combinations if (x, y) not in results_dict
+        (x, y)
+        for x, y in all_combinations
+        if (x, y) not in results_dict and results_dict[(x, y)] != Res.IMPL_UNKNOWN
     ]
 
     print(f"Total combinations: {total_combinations}")
