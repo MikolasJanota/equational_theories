@@ -25,15 +25,28 @@ def mk_stats(pkl_file):
             continue
         stats[(ri.method_id, ri.value)] += 1
     print("Methods", "&", "Refuted", "&", "Proven\\\\")
+    trues = 0
+    falses = 0
+
+    def prn_num(n):
+        return f"\\numprint{{{n}}}"
+
     for m in results.methods:
-        print(
-            m,
-            "&",
-            f"\\numprint{{{stats[(m, Res.IMPL_FALSE)]}}}",
-            "&",
-            f"\\numprint{{{stats[(m, Res.IMPL_TRUE)]}}}",
-            "\\\\",
-        )
+        t = stats[(m, Res.IMPL_TRUE)]
+        f = stats[(m, Res.IMPL_FALSE)]
+        falses += f
+        trues += t
+        print(m, "&", prn_num(f), "&", prn_num(t), "&", prn_num(f + t), "\\\\")
+    print(
+        "\\midrule total",
+        "&",
+        prn_num(falses),
+        "&",
+        prn_num(trues),
+        "&",
+        prn_num(falses + trues),
+        "\\\\",
+    )
 
 
 def main():
