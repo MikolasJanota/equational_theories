@@ -27,7 +27,12 @@ def mk_stats(pkl_file):
     print("Methods", "&", "Refuted", "&", "Proven\\\\")
     for m in results.methods:
         print(
-            m, "&", stats[(m, Res.IMPL_FALSE)], "&", stats[(m, Res.IMPL_TRUE)], "\\\\"
+            m,
+            "&",
+            f"\\numprint{{{stats[(m, Res.IMPL_FALSE)]}}}",
+            "&",
+            f"\\numprint{{{stats[(m, Res.IMPL_TRUE)]}}}",
+            "\\\\",
         )
 
 
