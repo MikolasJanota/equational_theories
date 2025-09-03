@@ -56,7 +56,7 @@ def export(pkl_file, res):
         prn = f"{lhs},{rhs}"
         if impls is not None:
             prn += f", proven true: {k in impls}"
-        if k in infins:
+        if infins is not None and k in infins:
             prn += ", infin"
         print(prn)
 
