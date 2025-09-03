@@ -15,52 +15,6 @@ from run_all import (
     load_results,
 )
 
-
-def msg(*args, **kwargs):
-    """Report."""
-    print("#", *args, **kwargs, flush=True)
-
-
-def main():
-    """Run the whole thing."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("pkl_file", type=str)
-    parser.add_argument(
-        "--res",
-        help="add info about expected result obtained from general_implications_closure.json",
-        action="store_true",
-        default=False,
-    )
-    args = parser.parse_args()
-    show(args.pkl_file, args.res)
-
-
-def show(pkl_file, res):
-    """Export all the unknowns."""
-    impls = check_res.read_json() if res else None
-    results = load_results(pkl_file)
-    dat = results.values
-    msg(f"loaded {len(dat)} values")
-    combinations = generate_combinations()
-    msg(f"generating from {len(combinations)} combinations")
-    for k in combinations:
-        assert (
-            k not in dat or dat[k].value != Res.IMPL_TRUE or impls is None or k in impls
-        )
-        if k in dat and dat[k].value != Res.IMPL_UNKNOWN:
-            continue
-        lhs, rhs = k
-        prn = f"{lhs},{rhs}"
-        if impls is not None:
-            prn += f", proven true: {k in impls}"
-        if infins is not None and k in infins:
-            prn += ", infin"
-        print(prn)
-
-
-if __name__ == "__main__":
-    main()
-
 infins = {
     (63, 1692),
     (65, 359),
@@ -479,3 +433,49 @@ infins = {
     (3994, 3549),
     (3994, 3588),
 }
+
+
+def msg(*args, **kwargs):
+    """Report."""
+    print("#", *args, **kwargs, flush=True)
+
+
+def main():
+    """Run the whole thing."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("pkl_file", type=str)
+    parser.add_argument(
+        "--res",
+        help="add info about expected result obtained from general_implications_closure.json",
+        action="store_true",
+        default=False,
+    )
+    args = parser.parse_args()
+    show(args.pkl_file, args.res)
+
+
+def show(pkl_file, res):
+    """Export all the unknowns."""
+    impls = check_res.read_json() if res else None
+    results = load_results(pkl_file)
+    dat = results.values
+    msg(f"loaded {len(dat)} values")
+    combinations = generate_combinations()
+    msg(f"generating from {len(combinations)} combinations")
+    for k in combinations:
+        assert (
+            k not in dat or dat[k].value != Res.IMPL_TRUE or impls is None or k in impls
+        )
+        if k in dat and dat[k].value != Res.IMPL_UNKNOWN:
+            continue
+        lhs, rhs = k
+        prn = f"{lhs},{rhs}"
+        if impls is not None:
+            prn += f", proven true: {k in impls}"
+        if k in infins:
+            prn += ", infin"
+        print(prn)
+
+
+if __name__ == "__main__":
+    main()
