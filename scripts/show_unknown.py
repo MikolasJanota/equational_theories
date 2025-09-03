@@ -4,11 +4,8 @@
 # Created on:  Fri Aug 1 21:43:10 CEST 2025
 # Copyright (C) 2025, Mikolas Janota
 import argparse
-import os
-from pathlib import Path
 
 import check_res
-from generate_tptp import print_tptp_file
 from run_all import (
     Res,
     ResultInfo,
@@ -35,11 +32,11 @@ def main():
         default=False,
     )
     args = parser.parse_args()
-    export(args.pkl_file, args.res)
+    show(args.pkl_file, args.res)
 
 
-def export(pkl_file, res):
-    """Export all they unknowns."""
+def show(pkl_file, res):
+    """Export all the unknowns."""
     impls = check_res.read_json() if res else None
     results = load_results(pkl_file)
     dat = results.values
