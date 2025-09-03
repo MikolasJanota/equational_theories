@@ -51,7 +51,7 @@ class Converter:
             return f"{self.m_name}({params})"
         raise ValueError("Expected an int or a tuple")
 
-    def tup_to_eq(self, tup, negate):
+    def tup_to_eq(self, tup, negate=False):
         """Produce a tptp equation out of an equation."""
         assert len(tup) == 2
         left, right = map(self.tup_to_term, tup)
