@@ -74,15 +74,19 @@ def test(external_command, timeout, a, b):
     bix = b - 1
     msg(f"testing {conv.tup_to_eq(eqs[aix])} {conv.tup_to_eq(eqs[bix])}")
     msg(f"testing {a} {b}")
-    for cix, c in enumerate(eqs):
+    for cix, c in enumerate(eqs[2:]):
         if cix in {aix, bix}:
             continue
-        msg(f"add {cix}: {conv.tup_to_eq(c, negate=False)}")
         prob = mk_prob(aix, bix, cix)
         start = time.perf_counter()
         prob_time = round(time.perf_counter() - start, 3)
         res = run_vampire(external_command, timeout, prob)
-        msg(f"{res} tm:{prob_time}")
+        resstr = (
+            "Unknown"
+            if res is Res.IMPL_UNKNOWN
+            else ("No model" if res is Res.IMPL_TRUE else "Model")
+        )
+        msg(f"{cix}, {conv.tup_to_eq(c)}, {resstr}, {prob_time}s")
         if res is Res.IMPL_FALSE:
             msg("solution found")
             print("prob:\n", prob)
